@@ -13,6 +13,7 @@ export A53_SOURCE_DIR   ?= /proj/cad_scratch6/prajput/mentor/a53/cortex_a53/arm_
 export CATAPULT_HOME    ?= /tool/eda/apps/mentorCatapult/10.5/Mgc_home/
 export CODEBENCH_HOME   ?= /proj/cad_arm_14lpp/knaraya2/m4_sample_rundir/gcc-arm-none-eabi-5_4-2016q3
 export VERDI_HOME       ?=
+export ARM_LIB          ?=
 
 endif
 
@@ -29,7 +30,7 @@ export A53_SOURCE_DIR   ?= /home/russk/gf_staging/from_gf/arm_cortex_a53/arm_cor
 export CATAPULT_HOME    ?= /wv/hlsb/CATAPULT/10.5a/PRODUCTION/aol/Mgc_home
 export CODEBENCH_HOME   ?= /home/russk/accelerator/cat_accel_design/tools/gcc-arm-none-eabi-9-2019-q4-major
 
-       arm_lib          ?= /home/russk/gf_staging/new_tree/arm_lib
+export ARM_LIB          ?= /home/russk/gf_staging/new_tree/arm_lib
 
 endif
 
@@ -83,8 +84,8 @@ SCCOM          = sccom
 
 
 VLOG_FLAGS     = -work $(work) +acc=all $(HDL_DEFINES)
-VIS_FLAGS      = -work $(work) -t 1ps -visualizer -qwavedb=+signal+report+memory=1024+transaction+class
-VSIM_FLAGS     = -work $(work) -t 1ps -voptargs="+acc" -do $(RUN_DO)
+VIS_FLAGS      = -work $(work) -L $(ARM_LIB) -t 1ps -visualizer -qwavedb=+signal+report+memory=1024+transaction+class
+VSIM_FLAGS     = -work $(work) -L $(ARM_LIB) -t 1ps -voptargs="+acc" -do $(RUN_DO)
 VOPT_VIS_FLAGS = -undefsyms=verbose -debug +designfile 
 VOPT_FLAGS     = -g +acc=all
 SCCOM_FLAGS    = -g -O0 $(INCLUDES) -std=c++11
@@ -106,7 +107,7 @@ build          = $(markers)/build.mark
 build_vis      = $(markers)/build_vis.mark
 work_lib       = $(markers)/work.mark
 tbench         = $(markers)/tbench.sv.mark
-cortex_a53     = $(markers)/cortex_a53.mark
+#cortex_a53     = $(markers)/cortex_a53.mark
 codelink       = $(markers)/codelink.mark
 accelerator    = $(markers)/accelerator.mark
 
@@ -207,13 +208,12 @@ run_warpcore: $(build) $(warpcore) $(RUN_DO) warpcore.config software
 	$(VSIM) $(VSIM_FLAGS) tbench -sv_lib terminal -sv_lib $(WARPCORE_HOME)/lib/libwarpcore_vsim_4.5_32
 
 #====== A53 processor ===============
+# ARM processor should be pe-compiled into $(ARM_LIB) 
+#$(cortex_a53): $(marker_dir) $(work_lib) ../hw.old/ca53_compile.vc $(a53_source)
+#	@echo VLOG    $(a53_source)
+#	@$(VLOG) $(VLOG_FLAGS) -f ../hw.old/ca53_compile.vc $(a53_source) >> make.out
+#	@touch $(cortex_a53)
 #
-#$(cortex_a53): $(marker_dir) $(work_lib) $(hw_sources)/ca53_compile.vc $(a53_source)
-$(cortex_a53): $(marker_dir) $(work_lib) ../hw.old/ca53_compile.vc $(a53_source)
-	@echo VLOG    $(a53_source)
-	@$(VLOG) $(VLOG_FLAGS) -f ../hw.old/ca53_compile.vc $(a53_source) >> make.out
-	@touch $(cortex_a53)
-
 #====== Accelerator =================
 
 $(accelerator):
