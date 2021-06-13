@@ -1,0 +1,1 @@
+../../master_par1/src/conv_par_in.spec
