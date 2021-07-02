@@ -732,12 +732,12 @@ module top (
 
 */
 
-`define sram_addr_bits 26
+`define sram_low_addr_bits 18
 
     axi_slave_interface 
         #(
         .masters    (`masters), 
-        .width      (`sram_addr_bits),
+        .width      (`sram_low_addr_bits),
         .id_bits    (`slave_id_bits),
         .p_size     (4),
         .b_size     (4))
@@ -749,7 +749,7 @@ module top (
  
         .AWMASTER  (S_AWMASTER[0]),
         .AWID      (S_AWID[0]),
-        .AWADDR    (S_AWADDR[0][`sram_addr_bits-1:0]),
+        .AWADDR    (S_AWADDR[0][`sram_low_addr_bits-1:0]),
         .AWLEN     (S_AWLEN[0]),
         .AWSIZE    (S_AWSIZE[0]),
         .AWBURST   (S_AWBURST[0]),
@@ -775,7 +775,7 @@ module top (
 
         .ARMASTER  (S_ARMASTER[0]),
         .ARID      (S_ARID[0]),
-        .ARADDR    (S_ARADDR[0][`sram_addr_bits-1:0]),
+        .ARADDR    (S_ARADDR[0][`sram_low_addr_bits-1:0]),
         .ARLEN     (S_ARLEN[0]),
         .ARSIZE    (S_ARSIZE[0]),
         .ARBURST   (S_ARBURST[0]),
@@ -793,44 +793,46 @@ module top (
         .RVALID    (S_RVALID[0]),
         .RREADY    (S_RREADY[0]),
 
-        .SRAM_READ_ADDRESS       (SSRAM_LOW_READ_ADDR[`sram_addr_bits-1:0]),
+        .SRAM_READ_ADDRESS       (SSRAM_LOW_READ_ADDR[`sram_low_addr_bits-1:0]),
         .SRAM_READ_DATA          (SSRAM_LOW_READ_DATA),
         .SRAM_OUTPUT_ENABLE      (SSRAM_LOW_OE),
  
-        .SRAM_WRITE_ADDRESS      (SSRAM_LOW_WRITE_ADDR[`sram_addr_bits-1:0]),
+        .SRAM_WRITE_ADDRESS      (SSRAM_LOW_WRITE_ADDR[`sram_low_addr_bits-1:0]),
         .SRAM_WRITE_DATA         (SSRAM_LOW_WRITE_DATA),
         .SRAM_WRITE_BYTE_ENABLE  (SSRAM_LOW_WRITE_BE),
         .SRAM_WRITE_STROBE       (SSRAM_LOW_WRITE_STROBE) 
     );
 
 `ifdef BYTE_MEMORY
-    sram_byte_corex #(`sram_addr_bits, 4) ssram_low (
+    sram_byte_corex #(`sram_low_addr_bits, 4) ssram_low (
          .CLK          (CLK),
-         .READ_ADDR    (SSRAM_LOW_READ_ADDR[`sram_addr_bits-1:0]),
+         .READ_ADDR    (SSRAM_LOW_READ_ADDR[`sram_low_addr_bits-1:0]),
          .DATA_OUT     (SSRAM_LOW_READ_DATA),
          .OE           (SSRAM_LOW_OE),
-         .WRITE_ADDR   (SSRAM_LOW_WRITE_ADDR[`sram_addr_bits-1:0]),
+         .WRITE_ADDR   (SSRAM_LOW_WRITE_ADDR[`sram_low_addr_bits-1:0]),
          .DATA_IN      (SSRAM_LOW_WRITE_DATA),
          .BE           (SSRAM_LOW_WRITE_BE),
          .WE           (SSRAM_LOW_WRITE_STROBE)
     ); 
 `else
-    sram_corex #(`sram_addr_bits, 4) ssram_low (
+    sram_corex #(`sram_low_addr_bits, 4) ssram_low (
          .CLK          (CLK),
-         .READ_ADDR    (SSRAM_LOW_READ_ADDR[`sram_addr_bits-1:0]),
+         .READ_ADDR    (SSRAM_LOW_READ_ADDR[`sram_low_addr_bits-1:0]),
          .DATA_OUT     (SSRAM_LOW_READ_DATA),
          .OE           (SSRAM_LOW_OE),
-         .WRITE_ADDR   (SSRAM_LOW_WRITE_ADDR[`sram_addr_bits-1:0]),
+         .WRITE_ADDR   (SSRAM_LOW_WRITE_ADDR[`sram_low_addr_bits-1:0]),
          .DATA_IN      (SSRAM_LOW_WRITE_DATA),
          .BE           (SSRAM_LOW_WRITE_BE),
          .WE           (SSRAM_LOW_WRITE_STROBE)
     ); 
 `endif
 
+`define sram_high_addr_bits 26 
+
     axi_slave_interface 
         #(
         .masters    (`masters), 
-        .width      (`sram_addr_bits),
+        .width      (`sram_high_addr_bits),
         .id_bits    (`slave_id_bits),
         .p_size     (4),
         .b_size     (4))
@@ -842,7 +844,7 @@ module top (
  
         .AWMASTER  (S_AWMASTER[4]),
         .AWID      (S_AWID[4]),
-        .AWADDR    (S_AWADDR[4][`sram_addr_bits-1:0]),
+        .AWADDR    (S_AWADDR[4][`sram_high_addr_bits-1:0]),
         .AWLEN     (S_AWLEN[4]),
         .AWSIZE    (S_AWSIZE[4]),
         .AWBURST   (S_AWBURST[4]),
@@ -868,7 +870,7 @@ module top (
 
         .ARMASTER  (S_ARMASTER[4]),
         .ARID      (S_ARID[4]),
-        .ARADDR    (S_ARADDR[4][`sram_addr_bits-1:0]),
+        .ARADDR    (S_ARADDR[4][`sram_high_addr_bits-1:0]),
         .ARLEN     (S_ARLEN[4]),
         .ARSIZE    (S_ARSIZE[4]),
         .ARBURST   (S_ARBURST[4]),
@@ -886,11 +888,11 @@ module top (
         .RVALID    (S_RVALID[4]),
         .RREADY    (S_RREADY[4]),
 
-        .SRAM_READ_ADDRESS       (SSRAM_HIGH_READ_ADDR[`sram_addr_bits-1:0]),
+        .SRAM_READ_ADDRESS       (SSRAM_HIGH_READ_ADDR[`sram_high_addr_bits-1:0]),
         .SRAM_READ_DATA          (SSRAM_HIGH_READ_DATA),
         .SRAM_OUTPUT_ENABLE      (SSRAM_HIGH_OE),
  
-        .SRAM_WRITE_ADDRESS      (SSRAM_HIGH_WRITE_ADDR[`sram_addr_bits-1:0]),
+        .SRAM_WRITE_ADDRESS      (SSRAM_HIGH_WRITE_ADDR[`sram_high_addr_bits-1:0]),
         .SRAM_WRITE_DATA         (SSRAM_HIGH_WRITE_DATA),
         .SRAM_WRITE_BYTE_ENABLE  (SSRAM_HIGH_WRITE_BE),
         .SRAM_WRITE_STROBE       (SSRAM_HIGH_WRITE_STROBE) 
@@ -906,15 +908,15 @@ module top (
     assign TB_MEM_WRITE_STROBE  = SSRAM_HIGH_WRITE_STROBE;
 `else
 `ifdef BYTE_MEMORY
-    sram_byte_corex #(`ssram_addr_bits, 4) ssram_high (
+    sram_byte_corex #(`ssram_high_addr_bits, 4) ssram_high (
 `else
-    sram_corex #(`sram_addr_bits, 4) ssram_high (
+    sram_corex #(`sram_high_addr_bits, 4) ssram_high (
 `endif
          .CLK          (CLK),
-         .READ_ADDR    (SSRAM_HIGH_READ_ADDR[`sram_addr_bits-1:0]),
+         .READ_ADDR    (SSRAM_HIGH_READ_ADDR[`sram_high_addr_bits-1:0]),
          .DATA_OUT     (SSRAM_HIGH_READ_DATA),
          .OE           (SSRAM_HIGH_OE),
-         .WRITE_ADDR   (SSRAM_HIGH_WRITE_ADDR[`sram_addr_bits-1:0]),
+         .WRITE_ADDR   (SSRAM_HIGH_WRITE_ADDR[`sram_high_addr_bits-1:0]),
          .DATA_IN      (SSRAM_HIGH_WRITE_DATA),
          .BE           (SSRAM_HIGH_WRITE_BE),
          .WE           (SSRAM_HIGH_WRITE_STROBE)

@@ -87,7 +87,7 @@ VLOG_FLAGS     = -work $(work) +acc=all $(HDL_DEFINES)
 VIS_FLAGS      = -work $(work) -L $(ARM_LIB) -t 1ps -visualizer -qwavedb=+signal+report+memory=1024+transaction+class
 VSIM_FLAGS     = -work $(work) -L $(ARM_LIB) -t 1ps -voptargs="+acc" -do $(RUN_DO)
 VOPT_VIS_FLAGS = -undefsyms=verbose -debug +designfile 
-VOPT_FLAGS     = -g +acc=all
+VOPT_FLAGS     = -g +acc=all -L $(ARM_LIB)
 SCCOM_FLAGS    = -g -O0 $(INCLUDES) -std=c++11
 
 #MTI_VCO_MODE   = 32
@@ -174,7 +174,7 @@ run_questa: $(build) $(RUN_DO) software
 $(build): $(marker_dir) $(work_lib) $(hdl_source_markers) $(cortex_a53) $(accelerator) $(terminal) 
 	@echo VOPT    tbench
 	###@$(VOPT) $(VOPT_FLAGS) tbench -o $(opt_object) >> make.out
-	$(VOPT) $(VOPT_FLAGS) $(FSDB_OPT) tbench -o $(opt_object) 
+	@$(VOPT) $(VOPT_FLAGS) $(FSDB_OPT) tbench -o $(opt_object) >> make.out
 	@touch $(build)
 
 #====== Visualizer target ==========
@@ -197,7 +197,7 @@ $(build_vis): $(marker_dir) $(work_lib) $(hdl_source_markers) $(cortex_a53) $(ac
 run_codelink: $(build) $(codelink) $(RUN_DO) codelink.ini software
 	$(VSIM) $(VSIM_FLAGS) tbench -sv_lib terminal \
 		-foreign "codelink $(CODELINK_HOME)/lib/codelink.so" \
-		+codelink_cpulabel=Top
+		+codelink_cpulabel=Top >> make.out
 
 #====== Codelink target ============
 
