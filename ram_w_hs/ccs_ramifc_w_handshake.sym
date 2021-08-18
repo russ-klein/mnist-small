@@ -1,0 +1,91 @@
+symlib 1.5 symcheck 2 16 64 i
+symref      158 ccs_ramifc_w_handshake.ccs_ramifc_w_handshake_r
+symref     1875 ccs_ramifc_w_handshake.ccs_ramifc_w_handshake_w
+symbol ccs_ramifc_w_handshake.ccs_ramifc_w_handshake_r * DEF \
+   port    clk_int in             -loc -5 -29 -5 -25 \
+   fpath -9 -25 \
+         -1 -25 \
+         -5            -19 \
+         -9 -25 \
+   pinattrdsp @name -cr.v -5 -17 8 \
+   text clk_int -cr.v -5 -17 8 \
+   port    rstn_int in             -loc 5 -29 5 -25 \
+   pinattrdsp @name -cr.v 5 -23 8 \
+   text rstn_int -cr.v 5 -23 8 \
+   port    clk out             -loc -25 29 -25 25 \
+   pinattrdsp @name -lc -25 23 8 \
+   text clk -lc -25 23 8 \
+   port    rstn out             -loc -15 29 -15 25 \
+   pinattrdsp @name -cl.v -15 23 8 \
+   text rstn -cl.v -15 23 8 \
+   port    s_re out             -loc -5 29 -5 25 \
+   pinattrdsp @name -cl.v -5 23 8 \
+   text s_re -cl.v -5 23 8 \
+   port    s_rrdy in             -loc 5 29 5 25 \
+   pinattrdsp @name -cl.v 5 23 8 \
+   text s_rrdy -cl.v 5 23 8 \
+   portBus s_raddr out 1 s_raddr(0) -loc 15 29 15 25 \
+   pinattrdsp @name -cl.v 15 23 8 \
+   text s_raddr -cl.v 15 23 8 \
+   portBus s_din in 1 s_din(0) -loc 25 29 25 25 \
+   pinattrdsp @name -cl.v 25 23 8 \
+   text s_din -cl.v 25 23 8 \
+   port    s_re_int in             -loc 100 -15 96 -15 \
+   pinattrdsp @name -cr 94 -15 8 \
+   text s_re_int -cr 94 -15 8 \
+   portBus s_raddr_int in 1 s_raddr_int(0) -loc 100 -5 96 -5 \
+   pinattrdsp @name -cr 94 -5 8 \
+   text s_raddr_int -cr 94 -5 8 \
+   portBus s_din_int out 1 s_din_int(0) -loc 100 5 96 5 \
+   pinattrdsp @name -cr 94 5 8 \
+   text s_din_int -cr 94 5 8 \
+   port    s_rrdy_int out             -loc -100 -15 -96 -15 \
+   pinattrdsp @name -cl -94 -15 8 \
+   text s_rrdy_int -cl -94 -15 8 \
+   text ccs_ramifc_w_handshake_r -lc 0 23 12 \
+   fillcolor 3 \
+   fpath -96 -25 96 -25 96 25 -96 25 -96 -25
+symbol ccs_ramifc_w_handshake.ccs_ramifc_w_handshake_w * DEF \
+   port    clk_int in             -loc -5 -29 -5 -25 \
+   fpath -9 -25 \
+         -1 -25 \
+         -5            -19 \
+         -9 -25 \
+   pinattrdsp @name -cr.v -5 -17 8 \
+   text clk_int -cr.v -5 -17 8 \
+   port    rstn_int in             -loc 5 -29 5 -25 \
+   pinattrdsp @name -cr.v 5 -23 8 \
+   text rstn_int -cr.v 5 -23 8 \
+   port    clk out             -loc -25 29 -25 25 \
+   pinattrdsp @name -lc -25 23 8 \
+   text clk -lc -25 23 8 \
+   port    rstn out             -loc -15 29 -15 25 \
+   pinattrdsp @name -cl.v -15 23 8 \
+   text rstn -cl.v -15 23 8 \
+   port    s_we out             -loc -5 29 -5 25 \
+   pinattrdsp @name -cl.v -5 23 8 \
+   text s_we -cl.v -5 23 8 \
+   port    s_wrdy in             -loc 5 29 5 25 \
+   pinattrdsp @name -cl.v 5 23 8 \
+   text s_wrdy -cl.v 5 23 8 \
+   portBus s_waddr out 1 s_waddr(0) -loc 15 29 15 25 \
+   pinattrdsp @name -cl.v 15 23 8 \
+   text s_waddr -cl.v 15 23 8 \
+   portBus s_dout out 1 s_dout(0) -loc 25 29 25 25 \
+   pinattrdsp @name -cl.v 25 23 8 \
+   text s_dout -cl.v 25 23 8 \
+   port    s_wrdy_int out             -loc 100 -15 96 -15 \
+   pinattrdsp @name -cr 94 -15 8 \
+   text s_wrdy_int -cr 94 -15 8 \
+   port    s_we_int in             -loc -100 -15 -96 -15 \
+   pinattrdsp @name -cl -94 -15 8 \
+   text s_we_int -cl -94 -15 8 \
+   portBus s_waddr_int in 1 s_waddr_int(0) -loc -100 -5 -96 -5 \
+   pinattrdsp @name -cl -94 -5 8 \
+   text s_waddr_int -cl -94 -5 8 \
+   portBus s_dout_int in 1 s_dout_int(0) -loc -100 5 -96 5 \
+   pinattrdsp @name -cl -94 5 8 \
+   text s_dout_int -cl -94 5 8 \
+   text ccs_ramifc_w_handshake_w -lc 0 23 12 \
+   fillcolor 3 \
+   fpath -96 -25 96 -25 96 25 -96 25 -96 -25

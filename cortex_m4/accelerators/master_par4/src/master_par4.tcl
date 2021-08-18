@@ -6,7 +6,7 @@ go compile
 
 solution library add nangate-45nm_beh -- -rtlsyntool DesignCompiler -vendor Nangate -technology 045nm
 solution library add ccs_sample_mem
-solution library add ccs_ramifc_w_handshake -file ../../../ram_w_hs/ccs_ramifc_w_handshake.lib
+solution library add ccs_ramifc_w_handshake -file ../../../../ram_w_hs/ccs_ramifc_w_handshake.lib
 
 go libraries
 
