@@ -61,7 +61,7 @@ def write_all(xtest, ytest):
          i = i + 1
       write_image(number_string(ytest[i]), xtest[i])
 
-def write_convolution_weights(w, layer, header, packing_factor=1):
+def write_convolution_weights(w, layer, base_address, header, packing_factor=1):
    header.write("   static const weight_t layer{:d}_weights[{:d}][{:d}][{:d}][{:d}] = \n".format(layer, w.shape[3], w.shape[2], w.shape[0], w.shape[1]))
    header.write("   { \n")
    for out_image in range(w.shape[3]):
@@ -105,16 +105,14 @@ def write_convolution_weights(w, layer, header, packing_factor=1):
    header.write("   static const int layer{:d}_unit_offset_factor = {:d};  \n".format(layer, unit_offset_factor))
    header.write("   static const int later{:d}_unit_count         = {:d};  \n".format(layer, w.shape[2]*w.shape[3]))
    header.write("      \n")
-   if (layer==1):
-      header.write("   static const int layer1_weight_offset         = 0;  \n")
-   header.write("   static const int layer{:d}_weight_offset      = layer{:d}_weight_offset + {:d};  \n".format(layer+1, layer, layer_offset_factor))
+   header.write("   static const int layer{:d}_weight_offset      = {:d};  \n".format(layer, base_address))
    header.write("      \n")
    header.write("      \n")
 
    return w.shape[0] * w.shape[1] * w.shape[2] * w.shape[3];
 
 
-def write_dense_weights(w, layer, count, header, packing_factor=1):
+def write_dense_weights(w, layer, count, base_address, header, packing_factor=1):
    header.write("   static const weight_t layer{:d}_weights[{:d}][{:d}] = \n".format(layer, w.shape[1], w.shape[0]))
    header.write("   { \n");
    for i in range(w.shape[1]):
@@ -138,17 +136,15 @@ def write_dense_weights(w, layer, count, header, packing_factor=1):
 
    header.write("   }; \n");
    header.write("      \n");
-   header.write("   static const int layer{:d}_weights_rows = {:d}; \n".format(layer, w.shape[1]));
-   header.write("   static const int layer{:d}_weights_cols = {:d}; \n".format(layer, w.shape[0]));
+   header.write("   static const int layer{:d}_weights_rows         = {:d}; \n".format(layer, w.shape[1]));
+   header.write("   static const int layer{:d}_weights_cols         = {:d}; \n".format(layer, w.shape[0]));
    header.write("      \n");
-   header.write("   static const int layer{:d}_num_weights        = {:d};  \n".format(layer, w.shape[0]*w.shape[1]))
-   header.write("   static const int layer{:d}_unit_size          = {:d};  \n".format(layer, w.shape[0]))
-   header.write("   static const int layer{:d}_unit_offset_factor = {:d};  \n".format(layer, unit_offset_factor))
-   header.write("   static const int later{:d}_unit_count         = {:d};  \n".format(layer, w.shape[1]))
+   header.write("   static const int layer{:d}_num_weights          = {:d};  \n".format(layer, w.shape[0]*w.shape[1]))
+   header.write("   static const int layer{:d}_unit_size            = {:d};  \n".format(layer, w.shape[0]))
+   header.write("   static const int layer{:d}_unit_offset_factor   = {:d};  \n".format(layer, unit_offset_factor))
+   header.write("   static const int later{:d}_unit_count           = {:d};  \n".format(layer, w.shape[1]))
    header.write("      \n")
-   if (layer==1):
-      header.write("   static const int layer1_weight_offset         = 0;  \n")
-   header.write("   static const int layer{:d}_weight_offset      = layer{:d}_weight_offset + {:d};  \n".format(layer+1, layer, layer_offset_factor))
+   header.write("   static const int layer{:d}_weight_offset        = {:d};  \n".format(layer, base_address))
    header.write("      \n")
    header.write("      \n")
 
@@ -158,7 +154,6 @@ def write_biases(b, layer, header):
    header.write("   static const weight_t layer{:d}_biases[{:d}]     = \n".format(layer, b.shape[0]))
    header.write("   { \n");
    for i in range(b.shape[0]):
-      print(b[i])
       header.write("      {:9.6f}".format(b[i]))
       if (i<b.shape[0]-1):
          header.write(", \n")
@@ -169,14 +164,12 @@ def write_biases(b, layer, header):
 
    return b.shape[0];
 
-def memimg_convolution_weights(header, memimg, fixed_file, w, layer, address, packing_factor=1, word_size=0, integer_bits=0):
+def memimg_convolution_weights(header, memimg, fixed_file, w, layer, base_address, packing_factor=1, word_size=0, integer_bits=0):
    if word_size == 0:
       word_size = int(32/packing_factor)
       if integer_bits==0:
           integer_bits = int(word_size/2)
       fractional_bits = word_size - integer_bits
-
-   # header.write("   static const int   layer{:d}_weight_offset      = {:d}; \n".format(layer, address))
 
    for out_image in range(w.shape[3]):
       for in_image in range(w.shape[2]):
@@ -220,25 +213,20 @@ def memimg_convolution_weights(header, memimg, fixed_file, w, layer, address, pa
    header.write("   static const int layer{:d}_unit_offset_factor   = {:d};  \n".format(layer, unit_offset_factor))
    header.write("   static const int later{:d}_unit_count           = {:d};  \n".format(layer, w.shape[2]*w.shape[3]))
    header.write("      \n")
-   if (layer==1):   
-      header.write("   static const int layer1_weight_offset           = 0;  \n")
-   header.write("   static const int layer{:d}_weight_offset        = layer{:d}_weight_offset + {:d};  \n".format(layer+1, layer, layer_offset_factor))
+   header.write("   static const int layer{:d}_weight_offset        = {:d};  \n".format(layer, base_address))
    header.write("      \n")
    header.write("      \n")
    
    return layer_offset_factor
    return w.shape[0] * w.shape[1] * w.shape[2] * w.shape[3];
    
-def memimg_dense_weights(header, memimg, fixed_file, w, layer, count, address, packing_factor=1, word_size=0, integer_bits=0):
+def memimg_dense_weights(header, memimg, fixed_file, w, layer, count, base_address, packing_factor=1, word_size=0, integer_bits=0):
    if word_size == 0:
       word_size = int(32/packing_factor)
       if integer_bits==0:
           integer_bits = int(word_size/2)
       fractional_bits = word_size - integer_bits
 
-   print('word_size: ', word_size, ' int_bits: ', integer_bits, ' frac_bits: ', fractional_bits)
-   # header.write("   static const int   layer{:d}_weight_offset      = {:d}; \n".format(layer, address))
-   
    for i in range(w.shape[1]):
       for c in range(count):
          for j in range(int(w.shape[0]/count)):
@@ -261,7 +249,6 @@ def memimg_dense_weights(header, memimg, fixed_file, w, layer, count, address, p
                new_bits = values[index] * factor
                new_bits = uint(new_bits)
                new_bits = new_bits & mask
-               print('original: ', values[index], ' bits: ', new_bits, ' factor: ', factor)
                new_bits = new_bits * shift_factor
                value = value + new_bits
 
@@ -271,17 +258,15 @@ def memimg_dense_weights(header, memimg, fixed_file, w, layer, count, address, p
    layer_offset_factor = unit_offset_factor * w.shape[1]
 
    header.write("      \n");
-   header.write("   static const int layer{:d}_weights_rows = {:d}; \n".format(layer, w.shape[1]));
-   header.write("   static const int layer{:d}_weights_cols = {:d}; \n".format(layer, w.shape[0]));
+   header.write("   static const int layer{:d}_weights_rows         = {:d}; \n".format(layer, w.shape[1]));
+   header.write("   static const int layer{:d}_weights_cols         = {:d}; \n".format(layer, w.shape[0]));
    header.write("      \n");
-   header.write("   static const int layer{:d}_num_weights        = {:d};  \n".format(layer, w.shape[0]*w.shape[1]))
-   header.write("   static const int layer{:d}_unit_size          = {:d};  \n".format(layer, w.shape[0]))
-   header.write("   static const int layer{:d}_unit_offset_factor = {:d};  \n".format(layer, unit_offset_factor))
-   header.write("   static const int later{:d}_unit_count         = {:d};  \n".format(layer, w.shape[1]))
+   header.write("   static const int layer{:d}_num_weights          = {:d};  \n".format(layer, w.shape[0]*w.shape[1]))
+   header.write("   static const int layer{:d}_unit_size            = {:d};  \n".format(layer, w.shape[0]))
+   header.write("   static const int layer{:d}_unit_offset_factor   = {:d};  \n".format(layer, unit_offset_factor))
+   header.write("   static const int later{:d}_unit_count           = {:d};  \n".format(layer, w.shape[1]))
    header.write("      \n")
-   if (layer==1):   
-      header.write("   static const int layer1_weight_offset         = 0;  \n")
-   header.write("   static const int layer{:d}_weight_offset      = layer{:d}_weight_offset + {:d};  \n".format(layer+1, layer, layer_offset_factor))
+   header.write("   static const int layer{:d}_weight_offset        = {:d};  \n".format(layer, base_address))
    header.write("      \n")
    header.write("      \n")
 
@@ -308,7 +293,7 @@ def write_header_file(weights, height, width, include_bias=False):
    weight_index = 0
 
    print("Layer #1")
-   size = write_convolution_weights (weights[weight_index], layer, header_file)
+   size = write_convolution_weights (weights[weight_index], layer, current_address, header_file)
    current_address += size * weight_size
    weight_index += 1
    if include_bias:
@@ -318,7 +303,7 @@ def write_header_file(weights, height, width, include_bias=False):
    layer += 1
 
    print("Layer #2")
-   size = write_convolution_weights (weights[weight_index], layer, header_file)
+   size = write_convolution_weights (weights[weight_index], layer, current_address, header_file)
    current_address += size * weight_size
    weight_index += 1
    if include_bias:
@@ -333,7 +318,7 @@ def write_header_file(weights, height, width, include_bias=False):
       input_size = weights[weight_index-1].shape[3]
 
    print("Layer #3")
-   size = write_dense_weights       (weights[weight_index], layer, input_size, header_file)
+   size = write_dense_weights       (weights[weight_index], layer, input_size, current_address, header_file)
    current_address += size * weight_size
    weight_index += 1
    if include_bias:
@@ -368,7 +353,7 @@ def write_memory_image_file(weights, height, width, include_bias=False, base_add
    current_address = 0
 
    header_file.write(" \n");
-   header_file.write("   static const int   base_address              = 0x{:x}; \n".format(base_address))
+   header_file.write("   static const int base_address                = 0x{:x}; \n".format(base_address))
    header_file.write(" \n");
 
    print("layer #1")
@@ -415,11 +400,11 @@ def write_memory_image_file(weights, height, width, include_bias=False, base_add
    print("end_address: ", current_address);
 
    header_file.write(" \n");
-   header_file.write("   static const int   image_height              = {:d}; \n".format(height))
-   header_file.write("   static const int   image_width               = {:d}; \n".format(width))
+   header_file.write("   static const int image_height                = {:d}; \n".format(height))
+   header_file.write("   static const int image_width                 = {:d}; \n".format(width))
    header_file.write(" \n");
 
-   header_file.write("   static const int   top_of_weights            = {:d}; \n".format(current_address))
+   header_file.write("   static const int top_of_weights              = {:d}; \n".format(current_address))
    header_file.write(" \n");
    header_file.close()
    memory_image_file.close()
