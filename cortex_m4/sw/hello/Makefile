@@ -15,7 +15,8 @@ endif
 ifeq ($(LOCATION), "MENTOR")
 
 #CODEBENCH_HOME  ?= /home/russk/accelerator/cat_accel_design/tools/CodeSourcery/Sourcery_CodeBench_for_ARM_EABI
-CODEBENCH_HOME  ?= /home/russk/accelerator/cat_accel_design/tools/gcc-arm-none-eabi-9-2019-q4-major
+#CODEBENCH_HOME  ?= /home/russk/accelerator/cat_accel_design/tools/gcc-arm-none-eabi-9-2019-q4-major
+CODEBENCH_HOME  ?= /home/russk/tools/compilers/gcc_arm32/gcc-arm-none-eabi-9-2019-q4-major
 
 endif
 

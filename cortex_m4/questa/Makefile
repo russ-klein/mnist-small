@@ -1,4 +1,12 @@
 
+
+#key parameters for the Makefile
+#
+# ACCEL=  should be set to mac, null, master_par[1-5], slave_par[1-5]
+# MASTER= must be defined if ACCEL is master_par[1-5]
+# TB_MEM= if defined moves large intermediate memory from design into testbench
+# FSDB= define if you want to create an FSDB from the run
+#
 LOCATION = "MENTOR"
 #LOCATION = "GLOBAL_FOUNDRIES"
 
@@ -26,7 +34,7 @@ export VIS_HOME         ?= /u/release/2020.2/visualizer
 export CODELINK_HOME    ?= /project/codelink_qa/codelink_homes/codelink_home_2020.1_aol
 export M4_SOURCE_DIR    ?= /home/russk/gf_staging/from_gf/arm_cortex_m4/logical
 export CATAPULT_HOME    ?= /wv/hlsb/CATAPULT/10.5a/PRODUCTION/aol/Mgc_home
-export CODEBENCH_HOME   ?= /home/russk/accelerator/cat_accel_design/tools/gcc-arm-none-eabi-9-2019-q4-major
+export CODEBENCH_HOME   ?= /home/russk/tools/compilers/gcc_arm32/gcc-arm-none-eabi-9-2019-q4-major
 export VERDI_HOME       ?= /wv/hlstools/Verdi/O-2018.09/verdi/Verdi_O-2018.09
 export ARM_LIB          ?= /home/russk/gf_staging/mnist_small/arm_lib
 
@@ -79,6 +87,7 @@ VSIM_FLAGS     = -work $(work) -L $(ARM_LIB) -t 1ps -voptargs="+acc" -do run.do 
 VOPT_VIS_FLAGS = -undefsyms=verbose -debug +designfile 
 VOPT_FLAGS     = -g +acc=all +designfile -debug
 SCCOM_FLAGS    = -g -O0 $(INCLUDES) -std=c++11
+QUIET_FLAG     = --no-print-directory
 
 
 export TERMINAL      = ../terminal
@@ -194,7 +203,7 @@ run_codelink: $(codelink) $(build) run.do codelink.ini software
 
 $(accelerator):
 	@echo "Making accelerator"
-	@make -C $(ACCEL_PATH)/src 
+	@make -C $(ACCEL_PATH)/src $(QUIET_FLAG)
 	@echo $(VLOG) $(VLOG_FLAGS) $(ACCEL_PATH)/hw/cat_accel.v
 	@$(VLOG) $(VLOG_FLAGS) $(ACCEL_PATH)/hw/cat_accel.v >> make.out
 	@echo $(VLOG) $(VLOG_FLAGS) $(ACCEL_PATH)/hw/$(ACCEL).v
@@ -303,7 +312,7 @@ codelink.ini:
 
 software:
 	@echo "Building program: $(PROGRAM)"
-	@make -C ../sw/$(PROGRAM) PROGRAM=$(PROGRAM) ACCEL=$(ACCEL) $(GCC_OPT)
+	@make -C ../sw/$(PROGRAM) PROGRAM=$(PROGRAM) ACCEL=$(ACCEL) $(GCC_OPT) $(QUIET_FLAG)
 
 program_image.mem: ../sw/$(PROGRAM)/$(PROGRAM).mem 
 	@ln -s program_image.mem ../sw/$(PROGRAM)/$(PROGRAM).mem
@@ -321,4 +330,4 @@ clean:
                 $(CRUFT)         \
                 $(terminal)      \
 		$(TERMINAL)/bin/terminal_emulator
-	@make -C ../sw/$(PROGRAM) clean
+	@make -C ../sw/$(PROGRAM) clean $(QUIET_FLAG)

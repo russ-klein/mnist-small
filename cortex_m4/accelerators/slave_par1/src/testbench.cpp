@@ -1676,14 +1676,18 @@ void sw_inference(unsigned char *input_image, host_type *probabilities)
     load_memory(weight_memory, image);
 #endif // not ARM
 
+#ifdef ARM
     start = *(volatile unsigned int *) 0x90000000;
+#endif
 
     copy_to_cat(top_of_weights, image, image_height * image_width);
     infer(top_of_weights, probabilities);
 
+#ifdef ARM
     end = *(volatile unsigned int *) 0x90000000;
-
     printf("elapsed cycles: %d \n", end-start);    
+#endif
+
 #else // not WEIGHT_MEMORY
     infer(image, probabilities);
 #endif // else not WEIGHT_MEMORY
@@ -1761,7 +1765,9 @@ void hw_inference(unsigned char *input_image, host_type *probabilities)
     //printf("foo = %d %d \n", (int) foo[0], (int) foo[1]);
     //printf("done\n");
     
+#ifdef ARM
     start = * (volatile unsigned int *) 0x90000000;
+#endif
 
     image_pointer = (host_type *) (void *) top_of_weights;
     copy_to_cat(top_of_weights + hw_offset, image, image_height * image_width);
@@ -1776,10 +1782,12 @@ void hw_inference(unsigned char *input_image, host_type *probabilities)
     //print_image(top_of_weights+hw_offset+AREA, 1);
 
     hw_infer(top_of_weights + hw_offset, probabilities); 
-    
-    end = * (volatile unsigned int *) 0x90000000;
 
+#ifdef ARM    
+    end = * (volatile unsigned int *) 0x90000000;
     printf("Elapsed cycles: %d \n", end-start);
+#endif
+
     printf("hardware probabilities: \n");
     for (i=0; i<10; i++) {
         printf(" %d: %8.6f \n", i, probabilities[i]);
@@ -1923,11 +1931,11 @@ int main()
     //conv_test();
     //printf("done. \n"); return 0;
 
-    
-    //printf("start sw: \n");
-    //sw_inference(input_image, sw_prob);
+    printf("start sw: \n");
+    sw_inference(input_image, sw_prob);
     
     printf("start hw: \n");
+
     hw_inference(input_image, hw_prob);
     
     for (i=0; i<10; i++) {
